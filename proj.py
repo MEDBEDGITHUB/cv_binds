@@ -69,10 +69,10 @@ class Vector(Point):
 
     __xor__ = cross_product
     __rmul__ = __mul__
-# Зацикливаем получение кадров от камеры
+
 while True:
     success, img = cap.read()
-    img = cv2.flip(img, 1)  # Mirror flip
+    img = cv2.flip(img, 1)
     imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     results = hands.process(imgRGB)
     if results.multi_hand_landmarks:
@@ -81,8 +81,6 @@ while True:
         else:
             isleft = 0
         cv2.putText(img, str(Point(results.multi_hand_landmarks[0].landmark[4].x, results.multi_hand_landmarks[0].landmark[4].y).dist(results.multi_hand_landmarks[0].landmark[8].x, results.multi_hand_landmarks[0].landmark[8].y)), (10, 50), cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
-        # cv2.putText(img, str(Point(results.multi_hand_landmarks[0].landmark[4].x, results.multi_hand_landmarks[0].landmark[4].y).dist(results.multi_hand_landmarks[0].landmark[12].x, results.multi_hand_landmarks[0].landmark[12].y) < 0.1), (10, 30), cv2.FONT_HERSHEY_PLAIN, 2,
-        #             (255, 0, 0), 2)
         if (isleft == 0 and results.multi_hand_landmarks[0].landmark[4].x < results.multi_hand_landmarks[0].landmark[
             20].x) or (
                 isleft == 1 and results.multi_hand_landmarks[0].landmark[4].x >
@@ -102,7 +100,6 @@ while True:
             for id, lm in enumerate(handLms.landmark):
                 h, w, c = img.shape
                 cx, cy = int(lm.x * w), int(lm.y * h)
-                # print(id, lm)       Hello, student!
                 if id == 8 or id == 12:
                     cv2.circle(img, (cx, cy), 10, (255, 0, 255), cv2.FILLED)
                 elif id == 4:
