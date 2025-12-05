@@ -6,3 +6,5 @@ Got critique from classmates, but my teacher refused to reject my idea because o
 
 01.12
 Made a way to save gestures
+
+05.12
