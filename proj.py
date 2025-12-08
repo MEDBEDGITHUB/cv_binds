@@ -5,7 +5,7 @@ import time
 import os
 import pyautogui
 from vector import *
-import pygame
+# import pygame
 import sign_record
 
 # Подключаем камеру
@@ -20,7 +20,8 @@ npDraw = mp.solutions.drawing_utils
 
 pTime = 0
 cTime = 0
-
+saved = False
+flag = 0
 while True:
     success, img = cap.read()
     img = cv2.flip(img, 1)
@@ -32,7 +33,10 @@ while True:
         else:
             isleft = 0
 
-        cv2.putText(img, str(Point(results.multi_hand_landmarks[0].landmark[4].x, results.multi_hand_landmarks[0].landmark[4].y).dist(results.multi_hand_landmarks[0].landmark[8].x, results.multi_hand_landmarks[0].landmark[8].y)), (10, 50), cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
+        cv2.putText(img, str(Point(results.multi_hand_landmarks[0].landmark[4].x,
+                                   results.multi_hand_landmarks[0].landmark[4].y).dist(
+            results.multi_hand_landmarks[0].landmark[8].x, results.multi_hand_landmarks[0].landmark[8].y)), (10, 50),
+                    cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
         for handLms in results.multi_hand_landmarks:
             for id, lm in enumerate(handLms.landmark):
                 h, w, c = img.shape
@@ -42,17 +46,20 @@ while True:
                 elif id == 4:
                     cv2.circle(img, (cx, cy), 10, (255, 0, 0), cv2.FILLED)
             npDraw.draw_landmarks(img, handLms, mpHands.HAND_CONNECTIONS)
+        if saved:
+            if saved == sign_record.Gesture(results):
+                flag += 1
+                print(f"yeah {flag}")
+
+        if cv2.waitKey(10) == 13:
+            saved = sign_record.Gesture(results)
+            print("Saved!")
+    cv2.imshow('python', img)
     cTime = time.time()
     fps = 1 / (cTime - pTime)
     pTime = cTime
-    print(Gesture())
-
-    cv2.imshow('python', img)
     if cv2.waitKey(20) == 27:  # exit on ESC
         break
-    elif cv2.waitKey(20) == 13:
-        saved = sign_record.save_gesture(results)
-
 
 cv2.destroyWindow("python")
 cap.release()

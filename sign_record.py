@@ -9,17 +9,18 @@ class Gesture:
         self.pos = self.save_gesture()
 
     def __eq__(self, other):
-        for i in range(len(self.pos)):
-            if self.pos:
-                if self.pos[i % 20] > self.pos[i // 20]:
-                    continue
-                else:
-                    return False
-            else:
-                if self.pos[i % 20] < self.pos[i // 20]:
-                    continue
-                else:
-                    return False
+        # for i in range(len(self.pos)):
+        #     if self.pos:
+        #         if int(self.pos[i % 20]) < int(other.pos[i // 20]):
+        #             continue
+        #         else:
+        #             return False
+        #     else:
+        #         if int(self.pos[i % 20]) > int(other.pos[i // 20]):
+        #             continue
+        #         else:
+        #             return False
+        return self.pos == other.pos
 
     def save_gesture(self):
         if self.found_hands.multi_handedness:
