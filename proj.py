@@ -50,6 +50,8 @@ while True:
             if saved == sign_record.Gesture(results):
                 flag += 1
                 print(f"yeah {flag}")
+            else:
+                print("be")
 
         if cv2.waitKey(10) == 13:
             saved = sign_record.Gesture(results)
