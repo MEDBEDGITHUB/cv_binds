@@ -33,10 +33,7 @@ while True:
         else:
             isleft = 0
 
-        cv2.putText(img, str(Point(results.multi_hand_landmarks[0].landmark[4].x,
-                                   results.multi_hand_landmarks[0].landmark[4].y).dist(
-            results.multi_hand_landmarks[0].landmark[8].x, results.multi_hand_landmarks[0].landmark[8].y)), (10, 50),
-                    cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
+
         for handLms in results.multi_hand_landmarks:
             for id, lm in enumerate(handLms.landmark):
                 h, w, c = img.shape
@@ -46,16 +43,51 @@ while True:
                 elif id == 4:
                     cv2.circle(img, (cx, cy), 10, (255, 0, 0), cv2.FILLED)
             npDraw.draw_landmarks(img, handLms, mpHands.HAND_CONNECTIONS)
-        if saved:
-            if saved == sign_record.Gesture(results):
-                flag += 1
-                print(f"yeah {flag}")
-            else:
-                print("be")
-
+        dir = 'hands/'
+        for filename in os.listdir(dir):
+            filepath = os.path.join(dir, filename)
+            if os.path.isfile(filepath):
+                try:
+                    with open(filepath, 'r') as file:  # 'r' for reading, use 'rb' for binary
+                        code = file.readline()
+                        if int(code) == int(sign_record.Gesture(results).pos):
+                            cv2.putText(img, filename, (10, 50),
+                                        cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
+                            btn = file.readline()
+                            if btn == "lbm":
+                                pyautogui.leftClick()
+                            elif btn == "rbm":
+                                pyautogui.rightClick()
+                            elif btn == "scroll":
+                                print(btn)
+                                pyautogui.scroll(-100)
+                            else:
+                                pyautogui.press(btn)
+                except Exception as e:
+                    print(f"Error opening {filename}: {e}")
         if cv2.waitKey(10) == 13:
-            saved = sign_record.Gesture(results)
-            print("Saved!")
+            while True:
+                saved = sign_record.Gesture(results)
+                gesture_name = input("What will you call this gesture? ")
+                gesture_bind = input("What do you want to bind? ")
+                try:
+                    with open(f"hands\{gesture_name}.hand", "x") as f:
+                        f.write(saved.pos)
+                        f.write("\n" + gesture_bind)
+                    print("Saved!")
+                    break
+                except:
+                    a = int(input("You already have gesture with this name, do you want to rewrite old file(1) or rename again new gesture(2)?"))
+                    if a == 1:
+                        with open(f"hands\{gesture_name}.hand", "w") as f:
+                            f.write(saved.pos)
+                            f.write("\n" + gesture_bind)
+                        print("Saved!")
+                        break
+                    elif a == 2:
+                        continue
+
+
     cv2.imshow('python', img)
     cTime = time.time()
     fps = 1 / (cTime - pTime)
