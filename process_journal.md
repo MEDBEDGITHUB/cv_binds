@@ -12,3 +12,9 @@ Made a gesture class
 
 08.12
 Almost made gesture recognition
+
+10.12
+Removed whole gesture recognition and replaced it with new algorithm, also made saving gestures in files
+
+11.12
+Added bending fingers check

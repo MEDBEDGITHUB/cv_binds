@@ -9,17 +9,6 @@ class Gesture:
         self.pos = self.save_gesture()
 
     def __eq__(self, other):
-        # for i in range(len(self.pos)):
-        #     if self.pos:
-        #         if int(self.pos[i % 20]) < int(other.pos[i // 20]):
-        #             continue
-        #         else:
-        #             return False
-        #     else:
-        #         if int(self.pos[i % 20]) > int(other.pos[i // 20]):
-        #             continue
-        #         else:
-        #             return False
         return self.pos == other.pos
 
     def save_gesture(self):
@@ -30,4 +19,7 @@ class Gesture:
                             self.found_hands.multi_hand_landmarks[0].landmark[i].x else "0"
                 a += "1" if self.found_hands.multi_hand_landmarks[0].landmark[0].y > \
                             self.found_hands.multi_hand_landmarks[0].landmark[i].y else "0"
+            for i in range(4, 20, 4):
+                a += "1" if self.found_hands.multi_hand_landmarks[0].landmark[i].y > \
+                            self.found_hands.multi_hand_landmarks[0].landmark[i-2].y else "0"
             return a
