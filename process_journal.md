@@ -18,3 +18,6 @@ Removed whole gesture recognition and replaced it with new algorithm, also made 
 
 11.12
 Added bending fingers check
+
+11.12 evening
+Added gesture calibration 
