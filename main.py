@@ -4,7 +4,6 @@ import mediapipe as mp
 import time
 import os
 import pyautogui
-from vector import *
 # import pygame
 import sign_record
 import time
@@ -18,11 +17,10 @@ mpHands = mp.solutions.hands
 hands = mpHands.Hands(False)
 npDraw = mp.solutions.drawing_utils
 
-pTime = 0
-cTime = 0
 saved = False
 flag = 0
 cnt = -1
+
 while True:
     success, img = cap.read()
     img = cv2.flip(img, 1)
@@ -44,7 +42,7 @@ while True:
                 filepath = os.path.join(dir, filename)
                 if os.path.isfile(filepath):
                     try:
-                        with open(filepath, 'r') as file:  # 'r' for reading, use 'rb' for binary
+                        with open(filepath, 'r') as file:
                             code = file.readline()
                             code1 = file.readline()
                             code2 = file.readline()
@@ -67,8 +65,13 @@ while True:
                                     pyautogui.press("volumeup")
                                 elif btn == "volume down":
                                     pyautogui.press("volumedown")
+                                elif btn == "photo":
+                                    cv2.imwrite("photo", img)
                                 else:
                                     pyautogui.press(btn)
+                            # else:
+                            #     cv2.putText(img, "Press enter to bind gesture", (10, 50),
+                            #                 cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
                     except Exception as e:
                         print(f"Error opening {filename}: {e}")
         elif cnt == 2 or cnt == 5:
@@ -135,9 +138,6 @@ while True:
 
 
     cv2.imshow('cv2 binds cam', img)
-    cTime = time.time()
-    fps = 1 / (cTime - pTime)
-    pTime = cTime
     if cv2.waitKey(20) == 27:  # exit on ESC
         break
 

@@ -21,3 +21,6 @@ Added bending fingers check
 
 11.12 evening
 Added gesture calibration 
+
+12.12
+My teacher told me to take out binding to whole new program with graphic interface
