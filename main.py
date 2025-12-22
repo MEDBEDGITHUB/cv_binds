@@ -61,19 +61,22 @@ while True:
                                     pyautogui.scroll(100)
                                 elif "+" in btn:
                                     pyautogui.hotkey(btn.split("+"))
-                                elif btn == "volume up":
+                                elif btn == "volume_up":
                                     pyautogui.press("volumeup")
-                                elif btn == "volume down":
+                                elif btn == "volume_down":
                                     pyautogui.press("volumedown")
-                                elif btn == "photo":
-                                    cv2.imwrite("photo", img)
+                                elif btn == "volume_mute":
+                                    pyautogui.press("volumemute")
                                 else:
                                     pyautogui.press(btn)
-                            # else:
-                            #     cv2.putText(img, "Press enter to bind gesture", (10, 50),
-                            #                 cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
+                            else:
+                                cv2.putText(img, "Press enter to bind gesture", (60, 50),
+                                            cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
                     except Exception as e:
                         print(f"Error opening {filename}: {e}")
+            if not os.listdir(dir):
+                cv2.putText(img, "Press enter to bind gesture", (60, 50),
+                            cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
         elif cnt == 2 or cnt == 5:
             cv2.putText(img, "Press enter when you shown gesture one more time", (10, 50),
                         cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
@@ -91,8 +94,23 @@ while True:
             while True:
                 saved = sign_record.Gesture(results)
                 if cnt == -1:
-                    gesture_name = input("What will you call this gesture? ")
-                    gesture_bind = input("What do you want to bind? ")
+                    if flag == 0:
+                        gesture_name = input("What will you call this gesture? ")
+                    gesture_bind = input('What do you want to bind(type "help" for more info)? ')
+                    if gesture_bind == "help":
+                        print("You can bind: \n"
+                              'Any button("button1")\n'
+                              'Hotkey("button1+button2+...+buttonN")\n'
+                              'Scroll up("scroll_up")\n'
+                              'Scroll down("scroll_down")\n'
+                              'Left mouse button("lmb")\n'
+                              'Right mouse button("rmb")\n'
+                              'Volume up("volume_up")\n'
+                              'Volume down("volume_down")\n'
+                              'Volume mute("volume_mute")')
+                        flag = 1
+                        continue
+                    print("Look in your camera again")
                     cv2.putText(img, "Remove your hand", (10, 50),
                                 cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
                     cnt += 1
@@ -128,6 +146,8 @@ while True:
                             break
                         elif a == 2:
                             continue
+                else:
+                    break
 
 
     elif cnt == 1 or cnt == 4:

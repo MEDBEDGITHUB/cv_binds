@@ -24,3 +24,6 @@ Added gesture calibration
 
 12.12
 My teacher told me to take out binding to whole new program with graphic interface
+
+Till 22.12
+I didn't have time to do gui(((
