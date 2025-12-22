@@ -9,16 +9,16 @@ import time
 # Подключаем камеру
 cap = cv2.VideoCapture(0)
 cap.set(3, 640)  # Width
-cap.set(4, 480)  # Lenght
+cap.set(4, 480)  # Length
 cap.set(10, 100)  # Brightness
 
 mpHands = mp.solutions.hands
 hands = mpHands.Hands(False)
 npDraw = mp.solutions.drawing_utils
 
-saved = False
-flag = 0
-cnt = -1
+saved_gesture = False
+gesture_has_name = 0
+callibrating_stage = -1
 
 while True:
     success, img = cap.read()
@@ -35,7 +35,7 @@ while True:
                 elif id == 4:
                     cv2.circle(img, (cx, cy), 10, (255, 0, 0), cv2.FILLED)
             npDraw.draw_landmarks(img, handLms, mpHands.HAND_CONNECTIONS)
-        if cnt == -1:
+        if callibrating_stage == -1:
             dir = 'hands/'
             if not os.listdir(dir):
                 cv2.putText(img, "Press enter to bind gesture", (60, 50),
@@ -52,50 +52,52 @@ while True:
                                 if int(code) == int(sign_record.Gesture(results).pos) or int(code1) == int(sign_record.Gesture(results).pos) or int(code2) == int(sign_record.Gesture(results).pos):
                                     cv2.putText(img, filename, (10, 50),
                                                 cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
-                                    btn = file.readline()
-                                    if btn == "lmb":
+                                    binded = file.readline()
+                                    if binded == "lmb":
                                         pyautogui.leftClick()
-                                    elif btn == "rmb":
+                                    elif binded == "rmb":
                                         pyautogui.rightClick()
-                                    elif btn == "scroll_down":
+                                    elif binded == "scroll_down":
                                         pyautogui.scroll(-100)
-                                    elif btn == "scroll_up":
+                                    elif binded == "scroll_up":
                                         pyautogui.scroll(100)
-                                    elif "+" in btn:
-                                        pyautogui.hotkey(btn.split("+"))
-                                    elif btn == "volume_up":
+                                    elif "+" in binded:
+                                        pyautogui.hotkey(binded.split("+"))
+                                    elif binded == "volume_up":
                                         pyautogui.press("volumeup")
-                                    elif btn == "volume_down":
+                                    elif binded == "volume_down":
                                         pyautogui.press("volumedown")
-                                    elif btn == "volume_mute":
+                                    elif binded == "volume_mute":
                                         pyautogui.press("volumemute")
                                     else:
-                                        pyautogui.press(btn)
+                                        pyautogui.press(binded)
                                 else:
                                     cv2.putText(img, "Press enter to bind gesture", (60, 50),
                                                 cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
                         except Exception as e:
                             print(f"Error opening {filename}: {e}")
 
-        elif cnt == 2 or cnt == 5:
+        elif callibrating_stage == 2 or callibrating_stage == 5:
             cv2.putText(img, "Press enter when you shown gesture one more time", (10, 50),
                         cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
 
-        elif cnt == 3:
+        elif callibrating_stage == 3:
             cv2.putText(img, "Remove your hand", (10, 50),
                         cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
-        elif cnt == 1 or cnt == 4:
-            cnt += 1
+        elif callibrating_stage == 1 or callibrating_stage == 4:
+            callibrating_stage += 1
 
         if cv2.waitKey(10) == 13:
             cv2.putText(img, "Look in console", (10, 50),
                         cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
             cv2.imshow('cv2 binds cam', img)
+            gesture_has_name = False
             while True:
-                saved = sign_record.Gesture(results)
-                if cnt == -1:
-                    if flag == 0:
+                saved_gesture = sign_record.Gesture(results)
+                if callibrating_stage == -1:
+                    if gesture_has_name == False:
                         gesture_name = input("What will you call this gesture? ")
+                        gesture_has_name = True
                     gesture_bind = input('What do you want to bind(type "help" for more info)? ')
                     if gesture_bind == "help":
                         print("You can bind: \n"
@@ -108,27 +110,26 @@ while True:
                               'Volume up("volume_up")\n'
                               'Volume down("volume_down")\n'
                               'Volume mute("volume_mute")')
-                        flag = 1
                         continue
                     print("Look in your camera again")
                     cv2.putText(img, "Remove your hand", (10, 50),
                                 cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
-                    cnt += 1
+                    callibrating_stage += 1
                     break
-                elif cnt == 2:
-                    saved1 = sign_record.Gesture(results)
-                    cnt += 1
+                elif callibrating_stage == 2:
+                    saved_gesture_1 = sign_record.Gesture(results)
+                    callibrating_stage += 1
                     break
-                elif cnt == 5:
-                    saved2 = sign_record.Gesture(results)
+                elif callibrating_stage == 5:
+                    saved_gesture_2 = sign_record.Gesture(results)
                     try:
                         with open(f"hands\{gesture_name}.hand", "x") as f:
-                            f.write(saved.pos)
-                            f.write("\n" + saved1.pos)
-                            f.write("\n" + saved2.pos)
+                            f.write(saved_gesture.pos)
+                            f.write("\n" + saved_gesture_1.pos)
+                            f.write("\n" + saved_gesture_2.pos)
                             f.write("\n" + gesture_bind)
                         print("Saved!")
-                        cnt = -1
+                        callibrating_stage = -1
                         time.sleep(0.5)
                         break
                     except:
@@ -136,12 +137,12 @@ while True:
                             "You already have gesture with this name, do you want to rewrite old file(1) or rename again new gesture(2)? "))
                         if a == 1:
                             with open(f"hands\{gesture_name}.hand", "w") as f:
-                                f.write(saved.pos)
-                                f.write("\n" + saved1.pos)
-                                f.write("\n" + saved2.pos)
+                                f.write(saved_gesture.pos)
+                                f.write("\n" + saved_gesture_1.pos)
+                                f.write("\n" + saved_gesture_2.pos)
                                 f.write("\n" + gesture_bind)
                             print("Saved!")
-                            cnt = -1
+                            callibrating_stage = -1
                             time.sleep(0.5)
                             break
                         elif a == 2:
@@ -150,11 +151,11 @@ while True:
                     break
 
 
-    elif cnt == 1 or cnt == 4:
+    elif callibrating_stage == 1 or callibrating_stage == 4:
         cv2.putText(img, "Show hand again", (10, 50),
                     cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
-    elif cnt == 0 or cnt == 3:
-        cnt += 1
+    elif callibrating_stage == 0 or callibrating_stage == 3:
+        callibrating_stage += 1
 
 
     cv2.imshow('cv2 binds cam', img)
