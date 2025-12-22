@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 import mediapipe as mp
-import time
 import os
 import pyautogui
 # import pygame
@@ -38,45 +37,46 @@ while True:
             npDraw.draw_landmarks(img, handLms, mpHands.HAND_CONNECTIONS)
         if cnt == -1:
             dir = 'hands/'
-            for filename in os.listdir(dir):
-                filepath = os.path.join(dir, filename)
-                if os.path.isfile(filepath):
-                    try:
-                        with open(filepath, 'r') as file:
-                            code = file.readline()
-                            code1 = file.readline()
-                            code2 = file.readline()
-                            if int(code) == int(sign_record.Gesture(results).pos) or int(code1) == int(sign_record.Gesture(results).pos) or int(code2) == int(sign_record.Gesture(results).pos):
-                                cv2.putText(img, filename, (10, 50),
-                                            cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
-                                btn = file.readline()
-
-                                if btn == "lmb":
-                                    pyautogui.leftClick()
-                                elif btn == "rmb":
-                                    pyautogui.rightClick()
-                                elif btn == "scroll_down":
-                                    pyautogui.scroll(-100)
-                                elif btn == "scroll_up":
-                                    pyautogui.scroll(100)
-                                elif "+" in btn:
-                                    pyautogui.hotkey(btn.split("+"))
-                                elif btn == "volume_up":
-                                    pyautogui.press("volumeup")
-                                elif btn == "volume_down":
-                                    pyautogui.press("volumedown")
-                                elif btn == "volume_mute":
-                                    pyautogui.press("volumemute")
-                                else:
-                                    pyautogui.press(btn)
-                            else:
-                                cv2.putText(img, "Press enter to bind gesture", (60, 50),
-                                            cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
-                    except Exception as e:
-                        print(f"Error opening {filename}: {e}")
             if not os.listdir(dir):
                 cv2.putText(img, "Press enter to bind gesture", (60, 50),
                             cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
+            else:
+                for filename in os.listdir(dir):
+                    filepath = os.path.join(dir, filename)
+                    if os.path.isfile(filepath):
+                        try:
+                            with open(filepath, 'r') as file:
+                                code = file.readline()
+                                code1 = file.readline()
+                                code2 = file.readline()
+                                if int(code) == int(sign_record.Gesture(results).pos) or int(code1) == int(sign_record.Gesture(results).pos) or int(code2) == int(sign_record.Gesture(results).pos):
+                                    cv2.putText(img, filename, (10, 50),
+                                                cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
+                                    btn = file.readline()
+                                    if btn == "lmb":
+                                        pyautogui.leftClick()
+                                    elif btn == "rmb":
+                                        pyautogui.rightClick()
+                                    elif btn == "scroll_down":
+                                        pyautogui.scroll(-100)
+                                    elif btn == "scroll_up":
+                                        pyautogui.scroll(100)
+                                    elif "+" in btn:
+                                        pyautogui.hotkey(btn.split("+"))
+                                    elif btn == "volume_up":
+                                        pyautogui.press("volumeup")
+                                    elif btn == "volume_down":
+                                        pyautogui.press("volumedown")
+                                    elif btn == "volume_mute":
+                                        pyautogui.press("volumemute")
+                                    else:
+                                        pyautogui.press(btn)
+                                else:
+                                    cv2.putText(img, "Press enter to bind gesture", (60, 50),
+                                                cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
+                        except Exception as e:
+                            print(f"Error opening {filename}: {e}")
+
         elif cnt == 2 or cnt == 5:
             cv2.putText(img, "Press enter when you shown gesture one more time", (10, 50),
                         cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 2)
@@ -99,7 +99,7 @@ while True:
                     gesture_bind = input('What do you want to bind(type "help" for more info)? ')
                     if gesture_bind == "help":
                         print("You can bind: \n"
-                              'Any button("button1")\n'
+                              'Any button("button")\n'
                               'Hotkey("button1+button2+...+buttonN")\n'
                               'Scroll up("scroll_up")\n'
                               'Scroll down("scroll_down")\n'
